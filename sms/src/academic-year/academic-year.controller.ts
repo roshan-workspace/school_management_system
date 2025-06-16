@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe } from '@nestjs/common';
 import { AcademicYearService } from './academic-year.service';
 import { CreateAcademicYearDto } from './dto/create-academic-year.dto';
 import { UpdateAcademicYearDto } from './dto/update-academic-year.dto';
@@ -8,8 +8,8 @@ export class AcademicYearController {
   constructor(private readonly academicYearService: AcademicYearService) {}
 
   @Post()
-  create(@Body() createAcademicYearDto: CreateAcademicYearDto) {
-    return this.academicYearService.create(createAcademicYearDto);
+  create(@Body(ValidationPipe) createAcademicYearDto:CreateAcademicYearDto) {
+    return this.academicYearService.create(createAcademicYearDto)
   }
 
   @Get()

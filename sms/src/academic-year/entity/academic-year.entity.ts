@@ -1,0 +1,25 @@
+import { School } from "src/school/entity/school.entity";
+import { Check, Column, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryGeneratedColumn, Unique } from "typeorm";
+
+@Entity('academic_year')
+@Unique(['start_year', 'end_year'])
+@Check(`"end_year" = "start_year"+1`)
+export class AcademicYear {
+
+    @PrimaryGeneratedColumn()
+    id:number
+
+    @Column()
+    start_year:number;
+
+    @Column()
+    end_year:number;
+
+    @Column()
+    school_id:number;
+
+    @ManyToOne(()=>School, (school)=>school.academicYears)
+    @JoinColumn({name:'school_id'})
+    school:School;
+
+}

@@ -10,8 +10,7 @@ export class SchoolController {
 
   @Get()
   async SchoolInfo() {
-    const school =  await  this.schoolService.SchoolInfo();
-    console.log(school[0].school_name);
+    const school =  await  this.schoolService.schoolInfo();
     return school
   }
 }
