@@ -26,8 +26,8 @@ export class GuardianService {
 
   async findAll(): Promise<Guardian[]> {
     try {
-      // return await this.guardianRepo.find({relations:{admissions:true}});
-      return await this.guardianRepo.find();
+      return await this.guardianRepo.find({relations:{admissions:true}});
+      // return await this.guardianRepo.find();
     } catch (error) {
       throw new InternalServerErrorException('Failed to fetch guardians');
     }

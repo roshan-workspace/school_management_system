@@ -53,7 +53,9 @@ export class CreateAdmissionDto {
   @IsBoolean()
   any_disability: boolean;
 
-
   @IsInt()
   grdn_id?: number;
+
+  @IsInt()
+  school_id?: number;
 }

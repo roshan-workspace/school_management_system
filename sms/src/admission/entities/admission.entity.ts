@@ -8,6 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Guardian } from 'src/guardian/entities/guardian.entity';
+import { School } from 'src/school/entity/school.entity';
 
 @Entity('admission')
 export class Admission {
@@ -53,12 +54,24 @@ export class Admission {
   @Column()
   grdn_id: number;
 
+
+  @Column()
+  school_id: number;
+
   // Relation with Guardian
   @ManyToOne(() => Guardian, (guardian) => guardian.admissions, {
     onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'grdn_id' })
   guardian: Guardian;
+
+
+  // relation with school
+  @ManyToOne(() => School, (school) => school.admissions)
+  @JoinColumn({ name: 'school_id' })
+  school: School;
+
+
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;

@@ -18,7 +18,6 @@ export class AcademicYearService {
   ) {}
 
 
-
   async create(createAcademicYearDto: CreateAcademicYearDto) {
     try {
       const academicYear = this.academicYearRepo.create(createAcademicYearDto);

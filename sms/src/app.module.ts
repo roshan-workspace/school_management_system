@@ -8,6 +8,8 @@ import { AcademicYearModule } from './academic-year/academic-year.module';
 import { GuardianModule } from './guardian/guardian.module';
 import { AdmissionModule } from './admission/admission.module';
 import { SubjectModule } from './subject/subject.module';
+import { ClassModule } from './class/class.module';
+import { SectionModule } from './section/section.module';
 
 
 @Module({
@@ -38,6 +40,8 @@ import { SubjectModule } from './subject/subject.module';
     GuardianModule,
     AdmissionModule,
     SubjectModule,
+    ClassModule,
+    SectionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

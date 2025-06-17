@@ -17,6 +17,7 @@ export class AdmissionService {
       const admission = this.admissionRepo.create(dto);
       return await this.admissionRepo.save(admission);
     } catch (error) {
+
       throw new InternalServerErrorException('Failed to create admission');
     }
   }
