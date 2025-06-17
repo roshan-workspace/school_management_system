@@ -2,6 +2,7 @@ import { Class } from 'src/class/entities/class.entity';
 import { AcademicYear } from '../../academic-year/entity/academic-year.entity';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { Admission } from 'src/admission/entities/admission.entity';
+import { Staff } from 'src/staff/entities/staff.entity';
 
 @Entity('school')
 export class School {
@@ -37,4 +38,8 @@ export class School {
   // relation with admission
   @OneToMany(() => Admission, (admission) => admission.school)
   admissions: Admission[];
+
+  // relation with staff
+  @OneToMany(()=> Staff, (stf)=>stf.school)
+  staffs:Staff[];
 }

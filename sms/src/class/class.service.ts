@@ -94,7 +94,6 @@ export class ClassService {
     }
 
     if(dto.school_id){
-
       const school = await this.schoolRepo.findOne({
         where: { school_id: dto.school_id },
       });

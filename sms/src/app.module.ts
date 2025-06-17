@@ -10,6 +10,8 @@ import { AdmissionModule } from './admission/admission.module';
 import { SubjectModule } from './subject/subject.module';
 import { ClassModule } from './class/class.module';
 import { SectionModule } from './section/section.module';
+import { SectionSubjectModule } from './section-subject/section-subject.module';
+import { StaffModule } from './staff/staff.module';
 
 
 @Module({
@@ -42,6 +44,8 @@ import { SectionModule } from './section/section.module';
     SubjectModule,
     ClassModule,
     SectionModule,
+    SectionSubjectModule,
+    StaffModule,
   ],
   controllers: [AppController],
   providers: [AppService],

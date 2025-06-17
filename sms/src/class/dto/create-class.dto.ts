@@ -1,5 +1,5 @@
 
-import { IsInt, IsNotEmpty, IsString } from 'class-validator';
+import { IsIn, IsInt, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateClassDto {
   @IsString()
@@ -11,4 +11,7 @@ export class CreateClassDto {
 
   @IsInt()
   acad_year_id: number;
+
+  @IsInt()
+  no_of_periods: number;
 }
