@@ -17,18 +17,18 @@ export class SectionSubjectController {
     return this.sectionSubjectService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.sectionSubjectService.findOne(+id);
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.sectionSubjectService.findOne(+id);
+  // }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSectionSubjectDto: UpdateSectionSubjectDto) {
-    return this.sectionSubjectService.update(+id, updateSectionSubjectDto);
-  }
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() updateSectionSubjectDto: UpdateSectionSubjectDto) {
+  //   return this.sectionSubjectService.update(+id, updateSectionSubjectDto);
+  // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.sectionSubjectService.remove(+id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.sectionSubjectService.remove(+id);
+  // }
 }

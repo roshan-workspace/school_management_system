@@ -6,7 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SchoolModule } from './school/school.module';
 import { AcademicYearModule } from './academic-year/academic-year.module';
 import { GuardianModule } from './guardian/guardian.module';
-import { AdmissionModule } from './admission/admission.module';
+import { StudentModule } from './student/student.module';
 import { SubjectModule } from './subject/subject.module';
 import { ClassModule } from './class/class.module';
 import { SectionModule } from './section/section.module';
@@ -40,7 +40,7 @@ import { StaffModule } from './staff/staff.module';
     SchoolModule,
     AcademicYearModule,
     GuardianModule,
-    AdmissionModule,
+    StudentModule,
     SubjectModule,
     ClassModule,
     SectionModule,

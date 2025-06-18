@@ -1,7 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ValidationPipe,
+  Query,
+} from '@nestjs/common';
 import { StaffService } from './staff.service';
 import { CreateStaffDto } from './dto/create-staff.dto';
 import { UpdateStaffDto } from './dto/update-staff.dto';
+import { Gender } from './constants/const';
 
 @Controller('staff')
 export class StaffController {
@@ -13,8 +24,14 @@ export class StaffController {
   }
 
   @Get()
-  findAll() {
-    return this.staffService.findAll();
+  findWithFilter(
+    @Query('gender') gender: Gender,
+    @Query('username') username: string,
+    @Query('name') name: string,
+    @Query('subject') subject: string,
+    @Query('onlyteachers') onlyteachers: boolean,
+  ) {
+    return this.staffService.findWithFilter(gender, username,name, subject, onlyteachers);
   }
 
   @Get(':id')
@@ -23,7 +40,10 @@ export class StaffController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body(ValidationPipe) updateStaffDto: UpdateStaffDto) {
+  update(
+    @Param('id') id: string,
+    @Body(ValidationPipe) updateStaffDto: UpdateStaffDto,
+  ) {
     return this.staffService.update(+id, updateStaffDto);
   }
 

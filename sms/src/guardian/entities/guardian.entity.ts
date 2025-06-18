@@ -1,4 +1,4 @@
-import { Admission } from 'src/admission/entities/admission.entity';
+import { Admission } from 'src/student/entities/admission.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,

@@ -1,7 +1,7 @@
 import { Class } from 'src/class/entities/class.entity';
 import { AcademicYear } from '../../academic-year/entity/academic-year.entity';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { Admission } from 'src/admission/entities/admission.entity';
+import { Admission } from 'src/student/entities/admission.entity';
 import { Staff } from 'src/staff/entities/staff.entity';
 
 @Entity('school')
@@ -28,7 +28,7 @@ export class School {
   establishment_year: Date;
 
   // relation with academic years
-  @OneToMany(()=> AcademicYear,(academicYear)=>academicYear.school, {eager:true})
+  @OneToMany(()=> AcademicYear,(academicYear)=>academicYear.school)
   academicYears: AcademicYear[];
 
   // relation with classes 

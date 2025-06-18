@@ -7,9 +7,10 @@ import {
 import { CreateStaffDto } from './dto/create-staff.dto';
 import { UpdateStaffDto } from './dto/update-staff.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { Staff } from './entities/staff.entity';
 import { School } from 'src/school/entity/school.entity';
+import { Gender } from './constants/const';
 
 @Injectable()
 export class StaffService {
@@ -33,24 +34,41 @@ export class StaffService {
       return await this.staffRepo.save(newStaff);
     } catch (error) {
       if (error.code == 23505) {
-        throw new BadRequestException('Either Username or Email already exists');
+        throw new BadRequestException(
+          'Either Username or Email already exists',
+        );
       }
       throw new InternalServerErrorException('Failed to create new Staff');
     }
   }
 
-
-  async findAll() {
+  async findWithFilter(
+    gender?: Gender,
+    username?: string,
+    name?: string,
+    subject?: string,
+    onlyteachers?: boolean,
+  ) {
     try {
-      return await this.staffRepo.find();
+      const where: any = {};
+      if (gender) where.gender = gender;
+      if (username) where.username = ILike(`%${username}%`);
+      if (name) where.full_name = ILike(`%${name}%`);
+      if (subject) where.subject_specialization = ILike(`%${subject}%`);
+      if (onlyteachers) where.is_teaching_staff = onlyteachers;
+
+      console.log(where);
+      return await this.staffRepo.find({ where });
     } catch (error) {
-      throw new InternalServerErrorException('Failed to fetch classes.');
+      throw new InternalServerErrorException(
+        'Failed to fetch staff with filters.',
+      );
     }
   }
 
-async findOne(id: number) {
+  async findOne(id: number) {
     const staff = await this.staffRepo.findOne({
-      where: { staff_id: id }
+      where: { staff_id: id },
     });
 
     if (!staff) {
@@ -59,13 +77,13 @@ async findOne(id: number) {
     return staff;
   }
 
- async update(id: number, dto: UpdateStaffDto) {
+  async update(id: number, dto: UpdateStaffDto) {
     const staff = await this.staffRepo.preload({ staff_id: id, ...dto });
     if (!staff) {
       throw new NotFoundException(`Staff with ID ${id} not found`);
     }
 
-    if(dto.school_id){
+    if (dto.school_id) {
       const school = await this.schoolRepo.findOne({
         where: { school_id: dto.school_id },
       });
@@ -79,8 +97,10 @@ async findOne(id: number) {
     try {
       return await this.staffRepo.save(staff);
     } catch (error) {
-      if(error.code == 23505){
-        throw new BadRequestException(`Either the email or username already exists`)
+      if (error.code == 23505) {
+        throw new BadRequestException(
+          `Either the email or username already exists`,
+        );
       }
       throw new InternalServerErrorException('Failed to update staff');
     }
@@ -92,7 +112,7 @@ async findOne(id: number) {
       throw new NotFoundException(`Staff Not Found`);
     }
     try {
-      await this.staffRepo.delete(id)
+      await this.staffRepo.delete(id);
       return { message: 'Staff deleted successfully' };
     } catch (error) {
       throw new InternalServerErrorException('Failed to delete Staff');

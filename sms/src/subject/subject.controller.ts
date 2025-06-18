@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe } from '@nestjs/common';
 import { SubjectService } from './subject.service';
 import { CreateSubjectDto } from './dto/create-subject.dto';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
@@ -8,7 +8,7 @@ export class SubjectController {
   constructor(private readonly subjectService: SubjectService) {}
 
   @Post()
-  create(@Body() createSubjectDto: CreateSubjectDto) {
+  create(@Body(ValidationPipe) createSubjectDto: CreateSubjectDto) {
     return this.subjectService.create(createSubjectDto);
   }
 
@@ -23,7 +23,7 @@ export class SubjectController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSubjectDto: UpdateSubjectDto) {
+  update(@Param('id') id: string, @Body(ValidationPipe) updateSubjectDto: UpdateSubjectDto) {
     return this.subjectService.update(+id, updateSubjectDto);
   }
 

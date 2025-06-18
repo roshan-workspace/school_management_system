@@ -40,13 +40,43 @@ export class SectionService {
     }
   }
 
+  // async findAll() {
+  //   try {
+  //     return await this.sectionRepo.find({relations:{sectionSubjects:true}});
+  //     //  return await this.sectionRepo.createQueryBuilder('section')
+  //     // .leftJoinAndSelect('section.class', 'class')
+  //     // .select([
+  //     //   'section.sec_id',
+  //     //   'section.section_name',
+  //     //   'class.class_name' 
+  //     // ])
+  //     // .getMany();
+  //   } catch (error) {
+  //     throw new InternalServerErrorException('Failed to fetch sections.');
+  //   }
+  // }
+
   async findAll() {
-    try {
-      return await this.sectionRepo.find();
-    } catch (error) {
-      throw new InternalServerErrorException('Failed to fetch sections.');
-    }
+  try {
+    const sections = await this.sectionRepo
+      .createQueryBuilder('section')
+      .leftJoinAndSelect('section.class', 'class')
+      .leftJoinAndSelect('section.sectionSubjects', 'sectionSubject')
+      .leftJoinAndSelect('sectionSubject.subject', 'subject')
+      .getMany();
+
+    // Now format the data
+    return sections.map(sec => ({
+      sec_id: sec.sec_id,
+      section_name: sec.section_name,
+      class_name: sec.class?.class_name || null,
+      subjects: sec.sectionSubjects?.map(ss => ss.subject?.subject_name) || []
+    }));
+  } catch (error) {
+    throw new InternalServerErrorException('Failed to fetch sections.');
   }
+}
+
 
   async findOne(id: number) {
     try {

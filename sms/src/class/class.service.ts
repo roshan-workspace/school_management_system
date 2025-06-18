@@ -61,7 +61,7 @@ export class ClassService {
 
   async findAll() {
     try {
-      return await this.classRepo.find();
+      return await this.classRepo.find({relations:{sections:true}});
     } catch (error) {
       throw new InternalServerErrorException('Failed to fetch classes.');
     }
@@ -73,7 +73,7 @@ export class ClassService {
 
   async findOne(id: number) {
     const cls = await this.classRepo.findOne({
-      where: { class_id: id }
+      where: { class_id: id }, relations:{sections:true}
     });
 
     if (!cls) {

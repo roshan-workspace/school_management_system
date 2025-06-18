@@ -6,9 +6,11 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToOne,
 } from 'typeorm';
 import { Guardian } from 'src/guardian/entities/guardian.entity';
 import { School } from 'src/school/entity/school.entity';
+import { Student } from './student.entity';
 
 @Entity('admission')
 export class Admission {
@@ -71,6 +73,9 @@ export class Admission {
   @JoinColumn({ name: 'school_id' })
   school: School;
 
+
+  @OneToOne(()=>Student,(student)=>student.admission)
+  student:Student;
 
 
   @CreateDateColumn({ type: 'timestamp' })

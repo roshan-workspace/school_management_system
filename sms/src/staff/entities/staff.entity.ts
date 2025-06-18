@@ -8,15 +8,17 @@ import {
   JoinColumn,
   Unique,
   Check,
+  OneToMany,
 } from 'typeorm';
 import { School } from 'src/school/entity/school.entity';
 import { Gender, StaffRole } from '../constants/const';
+import { SectionSubject } from 'src/section-subject/entities/section-subject.entity';
 
 @Entity('staff')
 @Unique(['username'])
 @Unique(['email'])
 @Check(`"gender" IN ('male', 'female', 'other')`)
-@Check(`"role" IN ('admin','principal','teacher')`)
+@Check(`"role" IN ('admin','principal','teacher','librarian','accountant','vice principal')`)
 export class Staff {
   @PrimaryGeneratedColumn()
   staff_id: number;
@@ -81,4 +83,7 @@ export class Staff {
 
   @UpdateDateColumn({ type: 'timestamp' })
   updated_at: Date;
+
+  @OneToMany(()=>SectionSubject, (ss)=>ss.staff)
+  sectionSubjects: SectionSubject[];
 }
