@@ -73,7 +73,7 @@ export class Staff {
   username: string;
 
   @Column({ type: 'text' })
-  hashed_password: string;
+  password: string;
 
   @Column({ type: 'varchar' })
   role: StaffRole;

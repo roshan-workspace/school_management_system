@@ -12,6 +12,9 @@ import { ClassModule } from './class/class.module';
 import { SectionModule } from './section/section.module';
 import { SectionSubjectModule } from './section-subject/section-subject.module';
 import { StaffModule } from './staff/staff.module';
+import { FeeStructureModule } from './student/feeStructure/fee-structure.module';
+import { StudentFeeModule } from './student/studentFee/student-fee.module';
+import { FeePaymentModule } from './student/fee-payment/fee-payment.module';
 
 
 @Module({
@@ -46,6 +49,9 @@ import { StaffModule } from './staff/staff.module';
     SectionModule,
     SectionSubjectModule,
     StaffModule,
+    FeeStructureModule,
+    StudentFeeModule,
+    FeePaymentModule
   ],
   controllers: [AppController],
   providers: [AppService],

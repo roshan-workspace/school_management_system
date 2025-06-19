@@ -73,7 +73,7 @@ export class CreateStaffDto {
 
   @IsString()
   @MinLength(6)
-  hashed_password: string;
+  password: string;
 
   @IsEnum(StaffRole)
   role: StaffRole;

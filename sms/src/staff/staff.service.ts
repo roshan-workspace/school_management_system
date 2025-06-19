@@ -42,6 +42,7 @@ export class StaffService {
     }
   }
 
+  
   async findWithFilter(
     gender?: Gender,
     username?: string,
@@ -57,7 +58,6 @@ export class StaffService {
       if (subject) where.subject_specialization = ILike(`%${subject}%`);
       if (onlyteachers) where.is_teaching_staff = onlyteachers;
 
-      console.log(where);
       return await this.staffRepo.find({ where });
     } catch (error) {
       throw new InternalServerErrorException(

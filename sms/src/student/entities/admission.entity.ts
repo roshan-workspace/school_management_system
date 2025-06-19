@@ -77,7 +77,6 @@ export class Admission {
   @OneToOne(()=>Student,(student)=>student.admission)
   student:Student;
 
-
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
 

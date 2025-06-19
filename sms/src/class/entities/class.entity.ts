@@ -4,14 +4,16 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
 import { School } from 'src/school/entity/school.entity';
 import { AcademicYear } from 'src/academic-year/entity/academic-year.entity';
 import { Section } from 'src/section/entities/section.entity';
+import { FeeStructure } from 'src/student/feeStructure/entities/fee-structure.entity';
 
-@Entity()
+@Entity('class')
 @Unique(['class_name'])
 export class Class {
   @PrimaryGeneratedColumn()
@@ -22,7 +24,6 @@ export class Class {
 
   @Column({ type: 'int', nullable: false })
   no_of_periods: number;
-
 
   // relation related configration
   @Column()
@@ -41,4 +42,8 @@ export class Class {
 
   @OneToMany(() => Section, (sec) => sec.class)
   sections: Section[];
+
+  @OneToOne(() => FeeStructure, (feeStructure) => feeStructure.class)
+  @JoinColumn({ name: 'fee_struct_id' })
+  feeStructure: FeeStructure;
 }

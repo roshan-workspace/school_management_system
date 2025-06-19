@@ -6,8 +6,11 @@ import {
   JoinColumn,
   OneToOne,
   Unique,
+  OneToMany,
 } from 'typeorm';
 import { Admission } from './admission.entity';
+import { StudentAttendance } from './student-attendance.entity';
+import { StudentFee } from '../studentFee/entities/student-fee.entity';
 
 
 @Entity('student')
@@ -23,4 +26,13 @@ export class Student {
   @OneToOne(() => Admission,(admission)=>admission.student)
   @JoinColumn({ name: 'adm_id'})
   admission: Admission;
+
+  @OneToMany(()=>StudentAttendance, (StudAtten)=>StudAtten.student)
+  attendances:StudentAttendance[];
+
+
+  @OneToMany(()=>StudentFee,(studentFee)=>studentFee.student)
+  studentFees:StudentFee[];
+
+
 }
