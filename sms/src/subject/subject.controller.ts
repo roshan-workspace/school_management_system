@@ -1,7 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UseGuards } from '@nestjs/common';
 import { SubjectService } from './subject.service';
 import { CreateSubjectDto } from './dto/create-subject.dto';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { Roles } from 'src/auth/roles.decorator';
+import { StaffRole } from 'src/staff/constants/const';
 
 @Controller('subject')
 export class SubjectController {
@@ -12,6 +16,9 @@ export class SubjectController {
     return this.subjectService.create(createSubjectDto);
   }
 
+  
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(StaffRole.PRINCIPAL, StaffRole.TEACHER)
   @Get()
   findAll() {
     return this.subjectService.findAll();

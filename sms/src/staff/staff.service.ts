@@ -12,6 +12,8 @@ import { Staff } from './entities/staff.entity';
 import { School } from 'src/school/entity/school.entity';
 import { Gender } from './constants/const';
 
+import * as bcrypt from 'bcrypt';
+
 @Injectable()
 export class StaffService {
   constructor(
@@ -30,7 +32,13 @@ export class StaffService {
     }
 
     try {
-      const newStaff = this.staffRepo.create(dto);
+
+      const saltRounds = 10;
+      const hasedPassword  =  await bcrypt.hash(dto.password, saltRounds);
+      const newStaff = this.staffRepo.create({
+        ...dto,
+        password:hasedPassword
+      });
       return await this.staffRepo.save(newStaff);
     } catch (error) {
       if (error.code == 23505) {

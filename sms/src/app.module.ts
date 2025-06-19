@@ -15,6 +15,7 @@ import { StaffModule } from './staff/staff.module';
 import { FeeStructureModule } from './student/feeStructure/fee-structure.module';
 import { StudentFeeModule } from './student/studentFee/student-fee.module';
 import { FeePaymentModule } from './student/fee-payment/fee-payment.module';
+import { AuthModule } from './auth/auth.module';
 
 
 @Module({
@@ -51,7 +52,8 @@ import { FeePaymentModule } from './student/fee-payment/fee-payment.module';
     StaffModule,
     FeeStructureModule,
     StudentFeeModule,
-    FeePaymentModule
+    FeePaymentModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],

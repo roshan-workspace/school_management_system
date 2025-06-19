@@ -21,8 +21,8 @@ export class School {
   @Column({ type: 'varchar', nullable: false })
   state: string;
 
-  @Column({ type: 'int', nullable: false })
-  pin_code: number;
+  @Column({ type: 'varchar', nullable: false })
+  pin_code: string;
 
   @Column({ type: 'date', nullable: false })
   establishment_year: Date;

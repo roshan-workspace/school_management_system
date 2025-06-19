@@ -1,4 +1,4 @@
-import { IsString, IsInt, IsDateString, IsNotEmpty } from 'class-validator';
+import { IsString, IsInt, IsDateString, IsNotEmpty, Length } from 'class-validator';
 
 export class CreateSchoolDto {
   @IsString()
@@ -17,9 +17,10 @@ export class CreateSchoolDto {
   @IsNotEmpty()
   state: string;
 
-  @IsInt()
-  pin_code: number;
-  
+  @IsString()
+  @IsNotEmpty()
+  @Length(6,6, { message: 'Pin code should be only 6 digits' })
+  pin_code: string;
 
   @IsDateString()
   establishment_year: Date;
