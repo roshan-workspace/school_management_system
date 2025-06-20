@@ -54,7 +54,16 @@ export class StudentService {
 
     try {
       const admission = this.admissionRepo.create(dto);
-      return await this.admissionRepo.save(admission);
+      const admissionInfo = await this.admissionRepo.save(admission);
+
+      return {
+        AdmissionID: admissionInfo.adm_id,
+        Name: admissionInfo.fname,
+        Dob: admissionInfo.dob,
+        Gender: admissionInfo.gender,
+        Address: admissionInfo.address,
+        GuardianID: admissionInfo.grdn_id,
+      };
     } catch (error) {
       throw new InternalServerErrorException('Failed to create admission');
     }
@@ -62,7 +71,27 @@ export class StudentService {
 
   async findAll() {
     // return await this.admissionRepo.find({ relations: ['guardian'] });
-    return await this.admissionRepo.find();
+
+    try {
+      const admissons = await this.admissionRepo.find({
+        relations: { guardian: true },
+      });
+      const requiredInfo = admissons.map((adm) => {
+        return {
+          AdmissionID: adm.adm_id,
+          Name: adm.fname,
+          Dob: adm.dob,
+          Gender: adm.gender,
+          Address: adm.address,
+          GuardianID: adm.guardian.grdn_id,
+          Guardian: adm.guardian.full_name,
+        };
+      });
+
+      return requiredInfo;
+    } catch (error) {
+      throw new InternalServerErrorException('Something went wrong .....');
+    }
   }
 
   async findOne(id: number) {
@@ -160,11 +189,24 @@ export class StudentService {
     }
   }
 
-  async findAllStudent(): Promise<Student[]> {
+  async findAllStudent() {
     try {
-      return await this.studentRepo.find({
-        relations: ['section', 'admission'],
+      const studentsInfo = await this.studentRepo.find({
+        relations: { admission: true, section: { class: true } },
       });
+
+      const requiredInfo = studentsInfo.map((studInfo) => {
+        return {
+          Student_ID: studInfo.stud_id,
+          AdmissionID: studInfo.admission.adm_id,
+          Name: studInfo.admission.fname,
+          Gender: studInfo.admission.gender,
+          Class: studInfo.section.class.class_name,
+          Section: studInfo.section.section_name,
+        };
+      });
+
+      return requiredInfo;
     } catch (error) {
       throw new InternalServerErrorException('Failed to fetch students');
     }
@@ -255,9 +297,23 @@ export class StudentService {
     }
   }
 
-  async findAllStudentAttendance(): Promise<StudentAttendance[]> {
+  async findAllStudentAttendance() {
     try {
-      return await this.attendanceRepo.find({ relations: ['student'] });
+      const attendanceList = await this.attendanceRepo.find({
+        relations: { student: { section: { class: true }, admission: true } },
+      });
+      const requiredInfo = attendanceList.map((att) => {
+        return {
+          StudentAttendanceID: att.stud_attend_id,
+          Name: att.student.admission.fname,
+          Date: att.date,
+          Status: att.status,
+          Class: att.student.section.class.class_name,
+          Section: att.student.section.section_name,
+        };
+      });
+
+      return requiredInfo;
     } catch (error) {
       throw new InternalServerErrorException(
         'Failed to fetch attendance records',
@@ -265,19 +321,24 @@ export class StudentService {
     }
   }
 
-  async findOneAttendanceByAttendanceId(
-    id: number,
-  ): Promise<StudentAttendance> {
+  async findOneAttendanceByAttendanceId(id: number) {
     const record = await this.attendanceRepo.findOne({
       where: { stud_attend_id: id },
-      relations: ['student'],
+      relations: { student: { section: { class: true }, admission: true } },
     });
 
     if (!record) {
       throw new NotFoundException(`Attendance record with ID ${id} not found`);
     }
 
-    return record;
+    return {
+      StudentAttendanceID: record.stud_attend_id,
+      Name: record.student.admission.fname,
+      Date: record.date,
+      Status: record.status,
+      Class: record.student.section.class.class_name,
+      Section: record.student.section.section_name,
+    };
   }
 
   async updateStudentAttendance(id: number, dto: UpdateStudentAttendanceDto) {
@@ -324,7 +385,6 @@ export class StudentService {
       );
     }
   }
-
 
   async findByStudentName(name: string) {
     const student = await this.studentRepo

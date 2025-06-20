@@ -18,6 +18,7 @@ export class SchoolService {
     private readonly schoolRepo: Repository<School>,
   ) {}
 
+  
   async create(dto: CreateSchoolDto): Promise<School> {
     try {
       const newSchool = this.schoolRepo.create(dto);
@@ -41,17 +42,20 @@ export class SchoolService {
       .leftJoin('school.staffs', 'staff')
       .select('school.school_id', 'school_id')
       .addSelect('school.school_name', 'school_name')
+      .select('school.school_id', 'school_id',)
       .addSelect('COUNT(DISTINCT academicYear.id)', 'academicYearCount')
       .addSelect('COUNT(DISTINCT class.class_id)', 'classCount')
       .addSelect('COUNT(DISTINCT admission.adm_id)', 'admissionCount')
       .addSelect('COUNT(DISTINCT staff.staff_id)', 'staffCount')
       .groupBy('school.school_id')
       .addGroupBy('school.school_name')
+      .addGroupBy('school.address') 
       .getRawMany();
 
     return schools.map((s) => ({
       school_id: Number(s.school_id),
       school_name: s.school_name,
+      address: s.address,
       academicYearCount: Number(s.academicYearCount),
       classCount: Number(s.classCount),
       admissionCount: Number(s.admissionCount),
@@ -64,14 +68,7 @@ export class SchoolService {
 }
 
 
- async findOne(id: number): Promise<{
-  school_id: number;
-  school_name: string;
-  academicYearCount: number;
-  classCount: number;
-  admissionCount: number;
-  staffCount: number;
-}> {
+ async findOne(id: number) {
   try {
     const result = await this.schoolRepo
       .createQueryBuilder('school')
@@ -81,6 +78,7 @@ export class SchoolService {
       .leftJoin('school.staffs', 'staff')
       .select('school.school_id', 'school_id')
       .addSelect('school.school_name', 'school_name')
+      .addSelect('school.address', 'address')
       .addSelect('COUNT(DISTINCT academicYear.id)', 'academicYearCount')
       .addSelect('COUNT(DISTINCT class.class_id)', 'classCount')
       .addSelect('COUNT(DISTINCT admission.adm_id)', 'admissionCount')
@@ -88,6 +86,7 @@ export class SchoolService {
       .where('school.school_id = :id', { id })
       .groupBy('school.school_id')
       .addGroupBy('school.school_name')
+      .addGroupBy('school.address') 
       .getRawOne();
 
     if (!result) {
@@ -97,6 +96,7 @@ export class SchoolService {
     return {
       school_id: Number(result.school_id),
       school_name: result.school_name,
+      address:result.address,
       academicYearCount: Number(result.academicYearCount),
       classCount: Number(result.classCount),
       admissionCount: Number(result.admissionCount),

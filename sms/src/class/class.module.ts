@@ -5,9 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Class} from './entities/class.entity';
 import { School } from 'src/school/entity/school.entity';
 import { AcademicYear } from 'src/academic-year/entity/academic-year.entity';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-   imports:[TypeOrmModule.forFeature([Class, School, AcademicYear])],
+   imports:[AuthModule,TypeOrmModule.forFeature([Class, School, AcademicYear])],
   controllers: [ClassController],
   providers: [ClassService],
 })

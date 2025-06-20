@@ -2,12 +2,14 @@ import {
   IsBoolean,
   IsDateString,
   IsEmail,
+  IsEnum,
   IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
   Matches,
 } from 'class-validator';
+import { Gender } from '../constants/const';
 
 export class CreateAdmissionDto {
   @IsNotEmpty()
@@ -24,6 +26,9 @@ export class CreateAdmissionDto {
 
   @IsDateString()
   dob: string;
+
+  @IsEnum(Gender)
+  gender: Gender;
 
   @IsString()
   address: string;

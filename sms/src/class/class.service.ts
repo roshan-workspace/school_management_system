@@ -21,9 +21,6 @@ export class ClassService {
     private academicRepo: Repository<AcademicYear>,
   ) {}
 
-
-
-
   async create(dto: CreateClassDto) {
     const school = await this.schoolRepo.findOne({
       where: { school_id: dto.school_id },
@@ -47,33 +44,38 @@ export class ClassService {
       const newClass = this.classRepo.create(dto);
       return await this.classRepo.save(newClass);
     } catch (error) {
-      if ((error.code == 23505)) {
+      if (error.code == 23505) {
         throw new BadRequestException('Class already exists');
       }
       throw new InternalServerErrorException('Failed to create new class');
     }
   }
 
-
-
-
-
-
   async findAll() {
     try {
-      return await this.classRepo.find({relations:{sections:true}});
+      const classes = await this.classRepo.find({
+        relations: { sections: true },
+      });
+
+      const requiredInfo = classes.map((cls, i) => {
+        return {
+          ClassID: cls.class_id,
+          ClassName: cls.class_name,
+          NoOfPeriods: cls.no_of_periods,
+          Sections: cls.sections.map((sec) => (cls.class_name+"-"+sec.section_name)),
+        };
+      });
+
+      return requiredInfo;
     } catch (error) {
       throw new InternalServerErrorException('Failed to fetch classes.');
     }
   }
 
-
-
-
-
   async findOne(id: number) {
     const cls = await this.classRepo.findOne({
-      where: { class_id: id }, relations:{sections:true}
+      where: { class_id: id },
+      relations: { sections: true },
     });
 
     if (!cls) {
@@ -82,18 +84,13 @@ export class ClassService {
     return cls;
   }
 
-
-
-
-
-
   async update(id: number, dto: UpdateClassDto) {
     const cls = await this.classRepo.preload({ class_id: id, ...dto });
     if (!cls) {
       throw new NotFoundException(`Class ID ${id} not found`);
     }
 
-    if(dto.school_id){
+    if (dto.school_id) {
       const school = await this.schoolRepo.findOne({
         where: { school_id: dto.school_id },
       });
@@ -104,8 +101,7 @@ export class ClassService {
       }
     }
 
-
-    if(dto.acad_year_id){
+    if (dto.acad_year_id) {
       const academic_year = await this.academicRepo.findOne({
         where: { id: dto.acad_year_id },
       });
@@ -119,16 +115,12 @@ export class ClassService {
     try {
       return await this.classRepo.save(cls);
     } catch (error) {
-      if(error.code == 23505){
-        throw new BadRequestException(`Class has already this class Name`)
+      if (error.code == 23505) {
+        throw new BadRequestException(`Class has already this class Name`);
       }
       throw new InternalServerErrorException('Failed to update class');
     }
   }
-
-
-
-
 
   async remove(id: number) {
     const cls = await this.classRepo.findOne({ where: { class_id: id } });
@@ -136,7 +128,7 @@ export class ClassService {
       throw new NotFoundException(`Class Not Found`);
     }
     try {
-      await this.classRepo.delete(id)
+      await this.classRepo.delete(id);
       return { message: 'Class deleted successfully' };
     } catch (error) {
       throw new InternalServerErrorException('Failed to delete class');

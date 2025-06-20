@@ -7,9 +7,10 @@ import { Section } from 'src/section/entities/section.entity';
 import { Class } from 'src/class/entities/class.entity';
 import { Staff } from 'src/staff/entities/staff.entity';
 import { Subject } from 'src/subject/entities/subject.entity';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([SectionSubject, Section, Class, Staff, Subject])],
+  imports:[AuthModule,TypeOrmModule.forFeature([SectionSubject, Section, Class, Staff, Subject])],
   controllers: [SectionSubjectController],
   providers: [SectionSubjectService],
 })

@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, InternalServerErrorException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Guardian } from './entities/guardian.entity';
@@ -12,36 +17,85 @@ export class GuardianService {
     private guardianRepo: Repository<Guardian>,
   ) {}
 
-  async create(createGuardianDto: CreateGuardianDto): Promise<Guardian> {
+  async create(createGuardianDto: CreateGuardianDto) {
     try {
       const guardian = this.guardianRepo.create(createGuardianDto);
-      return await this.guardianRepo.save(guardian);
+      const updatedGuardian =  await this.guardianRepo.save(guardian);
+       return {
+      id: updatedGuardian.grdn_id,
+      full_name: updatedGuardian.full_name,
+      email: updatedGuardian.email,
+      phone: updatedGuardian.phone,
+      occupation: updatedGuardian.occupation,
+    };
     } catch (error) {
-       if (error.code === '23505') {
-              throw new BadRequestException('Either email or phone already exists in our database');
-            }
-      throw new InternalServerErrorException({mesg:'Failed to create guardian',error});
+      if (error.code === '23505') {
+        throw new BadRequestException(
+          'Either email or phone already exists in our database',
+        );
+      }
+      throw new InternalServerErrorException({
+        mesg: 'Failed to create guardian',
+        error,
+      });
     }
   }
 
-  async findAll(): Promise<Guardian[]> {
+  async findAll() {
     try {
-      return await this.guardianRepo.find({relations:{admissions:true}});
+      const GL = await this.guardianRepo.find({
+        relations: { admissions: true },
+      });
+
+      const guardianInfo = GL.map((grd) => {
+        return {
+          ID: grd.grdn_id,
+          Name: grd.full_name,
+          Age: grd.age,
+          Address: grd.address,
+          Occupation: grd.occupation,
+          Email: grd.email,
+          Phone: grd.phone,
+          Children: grd.admissions.map((child) => {
+            return {
+              Name: child.fname + ' ' + child?.lname,
+              Gender: child.gender,
+            };
+          }),
+        };
+      });
+
+      return guardianInfo;
       // return await this.guardianRepo.find();
     } catch (error) {
       throw new InternalServerErrorException('Failed to fetch guardians');
     }
   }
 
-  async findOne(id: number): Promise<Guardian> {
-    const guardian = await this.guardianRepo.findOne({ where: { grdn_id: id } });
-    if (!guardian) {
+  async findOne(id: number) {
+    const grd = await this.guardianRepo.findOne({ where: { grdn_id: id } ,relations:{admissions:true}});
+    if (!grd) {
       throw new NotFoundException(`Guardian with ID ${id} not found`);
     }
-    return guardian;
+
+    return {
+      ID: grd.grdn_id,
+      Name: grd.full_name,
+      Age: grd.age,
+      Address: grd.address,
+      Occupation: grd.occupation,
+      Email: grd.email,
+      Phone: grd.phone,
+      Child:grd.admissions.map((child) => {
+            return {
+              Name: child.fname + ' ' + child?.lname,
+              Gender: child.gender,
+            };
+          }),
+    };
   }
 
-  async update(id: number, updateDto: UpdateGuardianDto): Promise<Guardian> {
+  async update(id: number, updateDto: UpdateGuardianDto) {
     const guardian = await this.guardianRepo.preload({
       grdn_id: id,
       ...updateDto,
@@ -52,7 +106,14 @@ export class GuardianService {
     }
 
     try {
-      return await this.guardianRepo.save(guardian);
+      const updatedGuardian =  await this.guardianRepo.save(guardian);
+       return {
+      id: updatedGuardian.grdn_id,
+      full_name: updatedGuardian.full_name,
+      email: updatedGuardian.email,
+      phone: updatedGuardian.phone,
+      occupation: updatedGuardian.occupation,
+    };
     } catch (error) {
       throw new InternalServerErrorException('Failed to update guardian');
     }

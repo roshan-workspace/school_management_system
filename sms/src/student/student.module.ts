@@ -13,9 +13,10 @@ import { StudentFee } from './studentFee/entities/student-fee.entity';
 import { FeeReceipt } from './entities/fee-receipt.entity';
 import { FeePaymentModule } from './fee-payment/fee-payment.module';
 import { FeePayment } from './fee-payment/entities/fee-payment.entity';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([Admission, 
+  imports:[AuthModule,TypeOrmModule.forFeature([Admission, 
     Student, Section, Guardian, School, StudentAttendance, FeeStructure, StudentFee, FeePayment, FeeReceipt]), FeePaymentModule],
   controllers: [StudentController],
   providers: [StudentService],

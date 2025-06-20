@@ -7,7 +7,7 @@ import {
   Param,
   Delete,
   ValidationPipe,
-  Query,
+  UseGuards,
 } from '@nestjs/common';
 import { StudentService } from './student.service';
 import { CreateAdmissionDto } from './dto/create-admission.dto';
@@ -16,6 +16,10 @@ import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { CreateStudentAttendanceDto } from './dto/create-student_attendance.dto';
 import { UpdateStudentAttendanceDto } from './dto/update-student_attendance.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { Roles } from 'src/auth/roles.decorator';
+import { StaffRole } from 'src/staff/constants/const';
 
 @Controller('student')
 export class StudentController {
@@ -23,6 +27,8 @@ export class StudentController {
 
   // -------------------- Admission Controllers ---------------------
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(StaffRole.ADMIN, StaffRole.PRINCIPAL, StaffRole.VICE_PRINCIPAL)
   @Post('/admission')
   create(@Body(ValidationPipe) createAdmissionDto: CreateAdmissionDto) {
     return this.studentService.create(createAdmissionDto);
@@ -38,6 +44,8 @@ export class StudentController {
     return this.studentService.findOne(+id);
   }
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(StaffRole.ADMIN, StaffRole.PRINCIPAL, StaffRole.VICE_PRINCIPAL)
   @Patch('/admission/:id')
   update(
     @Param('id') id: string,
@@ -46,6 +54,8 @@ export class StudentController {
     return this.studentService.update(+id, updateAdmissionDto);
   }
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(StaffRole.ADMIN, StaffRole.PRINCIPAL, StaffRole.VICE_PRINCIPAL)
   @Delete('/admission/:id')
   remove(@Param('id') id: string) {
     return this.studentService.remove(+id);
@@ -53,6 +63,13 @@ export class StudentController {
 
   // ------------------- Student Attendance ---------------------------
 
+   @UseGuards(AuthGuard, RolesGuard)
+  @Roles(
+    StaffRole.ADMIN,
+    StaffRole.PRINCIPAL,
+    StaffRole.VICE_PRINCIPAL,
+    StaffRole.TEACHER,
+  )
   @Post('/attendance')
   createStudentAttendance(
     @Body(ValidationPipe)
@@ -63,11 +80,7 @@ export class StudentController {
     );
   }
 
-  @Get('/attendance')
-  findByStudentName(@Query('name') name: string) {
-    return this.studentService.findByStudentName(name);
-  }
-
+ 
   @Get('/attendance')
   findAllStudentAttendance() {
     return this.studentService.findAllStudentAttendance();
@@ -78,6 +91,14 @@ export class StudentController {
     return this.studentService.findOneAttendanceByAttendanceId(+id);
   }
 
+
+   @UseGuards(AuthGuard, RolesGuard)
+  @Roles(
+    StaffRole.ADMIN,
+    StaffRole.PRINCIPAL,
+    StaffRole.VICE_PRINCIPAL,
+    StaffRole.TEACHER,
+  )
   @Patch('/attendance/:id')
   updateStudentAttendance(
     @Param('id') id: string,
@@ -90,6 +111,13 @@ export class StudentController {
     );
   }
 
+   @UseGuards(AuthGuard, RolesGuard)
+  @Roles(
+    StaffRole.ADMIN,
+    StaffRole.PRINCIPAL,
+    StaffRole.VICE_PRINCIPAL,
+    StaffRole.TEACHER,
+  )
   @Delete(':id')
   removeStudentAttendance(@Param('id') id: string) {
     return this.studentService.removeStudentAttendance(+id);
@@ -97,6 +125,13 @@ export class StudentController {
 
   // ----------------------- Student Controller -------------------------
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(
+    StaffRole.ADMIN,
+    StaffRole.PRINCIPAL,
+    StaffRole.VICE_PRINCIPAL,
+    StaffRole.TEACHER,
+  )
   @Post()
   createStudent(@Body(ValidationPipe) createStudentDto: CreateStudentDto) {
     return this.studentService.createStudent(createStudentDto);
@@ -112,6 +147,13 @@ export class StudentController {
     return this.studentService.findOneStudentById(+id);
   }
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(
+    StaffRole.ADMIN,
+    StaffRole.PRINCIPAL,
+    StaffRole.VICE_PRINCIPAL,
+    StaffRole.TEACHER,
+  )
   @Patch(':id')
   updateStudent(
     @Param('id') id: string,
@@ -120,6 +162,13 @@ export class StudentController {
     return this.studentService.updateStudent(+id, updateStudentDto);
   }
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(
+    StaffRole.ADMIN,
+    StaffRole.PRINCIPAL,
+    StaffRole.VICE_PRINCIPAL,
+    StaffRole.TEACHER,
+  )
   @Delete(':id')
   removeStudent(@Param('id') id: string) {
     return this.studentService.removeStudent(+id);

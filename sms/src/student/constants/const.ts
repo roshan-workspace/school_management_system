@@ -4,3 +4,10 @@ export enum Status {
   LATE = 'late',
   LEAVE = 'leave',
 }
+
+
+export enum Gender{
+  MALE = 'male',
+  FEMALE = 'female',
+  OTHER = 'other'
+}

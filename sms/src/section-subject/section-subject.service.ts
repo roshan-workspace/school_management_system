@@ -81,23 +81,126 @@ export class SectionSubjectService {
     }
   }
 
-  findAll() {
+  async findAll() {
     try {
-      return this.sectionSubjectRepo.find()
+      const subjectSectionsInfo = await this.sectionSubjectRepo.find({
+        relations: { subject: true, staff: true, section: { class: true } },
+      });
+      const requiredInfo = subjectSectionsInfo.map((ss) => {
+        return {
+          ID: ss.sec_sub_id,
+          ClassName: ss.section.class.class_name,
+          SectionName: ss.section.section_name,
+          TeacherName: ss.staff.full_name,
+          Subject: ss.subject.subject_name,
+        };
+      });
+
+      return requiredInfo;
     } catch (error) {
-      throw new InternalServerErrorException('Failed to fetch all the section Subjects')
+      throw new InternalServerErrorException(
+        'Failed to fetch all the section Subjects',
+      );
+    }
+  }
+
+  async findOne(id: number): Promise<SectionSubject> {
+    try {
+      const sectionSubject = await this.sectionSubjectRepo.findOne({
+        where: { sec_sub_id: id },
+        relations: ['section', 'staff', 'subject'], // Optional: include related data
+      });
+
+      if (!sectionSubject) {
+        throw new NotFoundException(`SectionSubject with ID ${id} not found`);
+      }
+
+      return sectionSubject;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `Failed to fetch SectionSubject with ID ${id}`,
+      );
+    }
+  }
+
+  async update(
+    id: number,
+    updateDto: UpdateSectionSubjectDto,
+  ): Promise<SectionSubject> {
+    try {
+      const existing = await this.sectionSubjectRepo.findOne({
+        where: { sec_sub_id: id },
+      });
+
+      if (!existing) {
+        throw new NotFoundException(`SectionSubject with ID ${id} not found`);
+      }
+
+      // Optional: validate new references if any are being updated
+      if (updateDto.sec_id) {
+        const section = await this.sectionRepo.findOne({
+          where: { sec_id: updateDto.sec_id },
+        });
+        if (!section) {
+          throw new NotFoundException(
+            `Section with ID ${updateDto.sec_id} not found`,
+          );
+        }
+      }
+
+      if (updateDto.staff_id) {
+        const staff = await this.staffRepo.findOne({
+          where: { staff_id: updateDto.staff_id },
+        });
+        if (!staff) {
+          throw new NotFoundException(
+            `Staff with ID ${updateDto.staff_id} not found`,
+          );
+        }
+      }
+
+      if (updateDto.subject_id) {
+        const subject = await this.subjectRepo.findOne({
+          where: { subject_id: updateDto.subject_id },
+        });
+        if (!subject) {
+          throw new NotFoundException(
+            `Subject with ID ${updateDto.subject_id} not found`,
+          );
+        }
+      }
+
+      const updated = this.sectionSubjectRepo.merge(existing, updateDto);
+      return await this.sectionSubjectRepo.save(updated);
+    } catch (error) {
+      if (error.code === '23505') {
+        throw new BadRequestException(
+          'This section-subject assignment already exists.',
+        );
+      }
+      throw new InternalServerErrorException(
+        'Failed to update SectionSubject.',
+      );
+    }
+  }
+
+  remove(id: number) {
+    try {
+      const sectionSubjects = this.sectionSubjectRepo.findOne({
+        where: { sec_sub_id: id },
+      });
+      if (!sectionSubjects) {
+        throw new NotFoundException(
+          `Section Subjects not Found with this id:${id}`,
+        );
+      }
+
+      this.sectionSubjectRepo.delete(id);
+      return { message: 'Subject Section Deleted Successfully' };
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `Failed to delete Subject section`,
+      );
     }
   }
 }
-
-//   findOne(id: number) {
-//     return `This action returns a #${id} sectionSubject`;
-//   }
-
-//   update(id: number, updateSectionSubjectDto: UpdateSectionSubjectDto) {
-//     return `This action updates a #${id} sectionSubject`;
-//   }
-
-//   remove(id: number) {
-//     return `This action removes a #${id} sectionSubject`;
-//   }

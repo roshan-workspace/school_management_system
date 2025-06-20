@@ -4,9 +4,10 @@ import { SchoolController } from './school.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { School } from './entity/school.entity';
 import { DataSource } from 'typeorm';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([School])],
+  imports:[AuthModule,TypeOrmModule.forFeature([School])],
   controllers: [SchoolController],
   providers: [
     SchoolService],

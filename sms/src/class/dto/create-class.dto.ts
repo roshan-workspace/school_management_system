@@ -13,5 +13,6 @@ export class CreateClassDto {
   acad_year_id: number;
 
   @IsInt()
+  @IsNotEmpty()
   no_of_periods: number;
 }

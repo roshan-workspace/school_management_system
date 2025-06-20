@@ -10,7 +10,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 import { Staff } from './entities/staff.entity';
 import { School } from 'src/school/entity/school.entity';
-import { Gender } from './constants/const';
+import { Gender, StaffRole } from './constants/const';
 
 import * as bcrypt from 'bcrypt';
 
@@ -32,14 +32,24 @@ export class StaffService {
     }
 
     try {
-
       const saltRounds = 10;
-      const hasedPassword  =  await bcrypt.hash(dto.password, saltRounds);
+      const hasedPassword = await bcrypt.hash(dto.password, saltRounds);
       const newStaff = this.staffRepo.create({
         ...dto,
-        password:hasedPassword
+        password: hasedPassword,
       });
-      return await this.staffRepo.save(newStaff);
+      const addedStaff = await this.staffRepo.save(newStaff);
+      return {
+        StaffID:addedStaff.staff_id,
+        Name: addedStaff.full_name,
+        Gender: addedStaff.gender,
+        Age: addedStaff.age,
+        Email: addedStaff.email,
+        Subject: addedStaff.subject_specialization,
+        Username: addedStaff.username,
+        Role: addedStaff.role,
+        Message: 'New Staff Added Successfully',
+      };
     } catch (error) {
       if (error.code == 23505) {
         throw new BadRequestException(
@@ -50,13 +60,13 @@ export class StaffService {
     }
   }
 
-  
   async findWithFilter(
     gender?: Gender,
     username?: string,
     name?: string,
     subject?: string,
     onlyteachers?: boolean,
+    role?: StaffRole,
   ) {
     try {
       const where: any = {};
@@ -65,8 +75,23 @@ export class StaffService {
       if (name) where.full_name = ILike(`%${name}%`);
       if (subject) where.subject_specialization = ILike(`%${subject}%`);
       if (onlyteachers) where.is_teaching_staff = onlyteachers;
+      if (role) where.role = role;
 
-      return await this.staffRepo.find({ where });
+      const staffList = await this.staffRepo.find({ where });
+      const staffInfo = staffList.map((staff, i) => {
+        return {
+          StaffID:staff.staff_id,
+          Name: staff.full_name,
+          Gender: staff.gender,
+          Age: staff.age,
+          Email: staff.email,
+          Subject: staff.subject_specialization,
+          Username: staff.username,
+          Role: staff.role,
+        };
+      });
+
+      return staffInfo;
     } catch (error) {
       throw new InternalServerErrorException(
         'Failed to fetch staff with filters.',

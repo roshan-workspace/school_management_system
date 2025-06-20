@@ -11,6 +11,7 @@ import {
 import { Guardian } from 'src/guardian/entities/guardian.entity';
 import { School } from 'src/school/entity/school.entity';
 import { Student } from './student.entity';
+import { Gender } from '../constants/const';
 
 @Entity('admission')
 export class Admission {
@@ -28,6 +29,9 @@ export class Admission {
 
   @Column({ type: 'date', nullable: false })
   dob: Date;
+
+  @Column({ type: 'text' })
+  gender: Gender;
 
   @Column({ type: 'varchar', nullable: false })
   address: string;
