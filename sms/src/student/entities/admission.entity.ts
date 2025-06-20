@@ -57,9 +57,14 @@ export class Admission {
   @Column({ type: 'boolean', default: false })
   any_disability: boolean;
 
+  @Column({ type: 'varchar' })
+  username: string;
+
+  @Column({ type: 'text' })
+  password: string;
+
   @Column()
   grdn_id: number;
-
 
   @Column()
   school_id: number;
@@ -71,15 +76,13 @@ export class Admission {
   @JoinColumn({ name: 'grdn_id' })
   guardian: Guardian;
 
-
   // relation with school
   @ManyToOne(() => School, (school) => school.admissions)
   @JoinColumn({ name: 'school_id' })
   school: School;
 
-
-  @OneToOne(()=>Student,(student)=>student.admission)
-  student:Student;
+  @OneToOne(() => Student, (student) => student.admission)
+  student: Student;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;

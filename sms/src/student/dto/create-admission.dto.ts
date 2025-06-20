@@ -8,6 +8,7 @@ import {
   IsOptional,
   IsString,
   Matches,
+  MinLength,
 } from 'class-validator';
 import { Gender } from '../constants/const';
 
@@ -57,6 +58,14 @@ export class CreateAdmissionDto {
 
   @IsBoolean()
   any_disability: boolean;
+
+  @IsString()
+  @MinLength(4)
+  username: string;
+
+  @IsString()
+  @MinLength(6)
+  password: string;
 
   @IsInt()
   grdn_id?: number;

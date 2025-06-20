@@ -9,6 +9,8 @@ import {
   ValidationPipe,
   Query,
   UseGuards,
+  Req,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { StaffService } from './staff.service';
 import { CreateStaffDto } from './dto/create-staff.dto';
@@ -17,10 +19,14 @@ import { Gender, StaffRole } from './constants/const';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/auth/roles.decorator';
+import { Request } from 'express';
 
 @Controller('staff')
 export class StaffController {
   constructor(private readonly staffService: StaffService) {}
+  privilagedRoles(): StaffRole[] {
+    return [StaffRole.ADMIN, StaffRole.PRINCIPAL, StaffRole.VICE_PRINCIPAL];
+  }
 
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(StaffRole.ADMIN, StaffRole.PRINCIPAL, StaffRole.VICE_PRINCIPAL)
@@ -29,17 +35,8 @@ export class StaffController {
     return this.staffService.create(createStaffDto);
   }
 
-
-  
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles(
-    StaffRole.ADMIN,
-    StaffRole.PRINCIPAL,
-    StaffRole.TEACHER,
-    StaffRole.ACCOUNTANT,
-    StaffRole.LIBRARIAN,
-    StaffRole.VICE_PRINCIPAL,
-  )
+  @Roles(StaffRole.ADMIN, StaffRole.PRINCIPAL, StaffRole.VICE_PRINCIPAL)
   @Get()
   findWithFilter(
     @Query('gender') gender: Gender,
@@ -59,49 +56,48 @@ export class StaffController {
     );
   }
 
-
-
-
-
-   @UseGuards(AuthGuard, RolesGuard)
-  @Roles(
-    StaffRole.ADMIN,
-    StaffRole.PRINCIPAL,
-    StaffRole.TEACHER,
-    StaffRole.ACCOUNTANT,
-    StaffRole.LIBRARIAN,
-    StaffRole.VICE_PRINCIPAL,
-  )
+  @UseGuards(AuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.staffService.findOne(+id);
+  findOne(@Param('id') id: string, @Req() req) {
+    const { staff_id, role } = req.loginInfo;
+    const requestedId = +id;
+    console.log(req.loginInfo);
+
+    if (this.privilagedRoles().includes(role) || requestedId === staff_id) {
+      return this.staffService.findOne(requestedId);
+    }
+
+    throw new UnauthorizedException('You can only access your own details.');
   }
 
-   @UseGuards(AuthGuard, RolesGuard)
-  @Roles(
-    StaffRole.ADMIN,
-    StaffRole.PRINCIPAL,
-    StaffRole.TEACHER,
-    StaffRole.ACCOUNTANT,
-    StaffRole.LIBRARIAN,
-    StaffRole.VICE_PRINCIPAL,
-  )
+  @UseGuards(AuthGuard)
   @Patch(':id')
   update(
     @Param('id') id: string,
     @Body(ValidationPipe) updateStaffDto: UpdateStaffDto,
+    @Req() req,
   ) {
-    return this.staffService.update(+id, updateStaffDto);
+    const { staff_id, role } = req.loginInfo;
+    const requestedId = +id;
+    console.log(req.loginInfo);
+
+    if (this.privilagedRoles().includes(role) || requestedId === staff_id) {
+      return this.staffService.update(requestedId, updateStaffDto);
+    }
+    throw new UnauthorizedException('You are not authorized to perform this action');
   }
 
-   @UseGuards(AuthGuard, RolesGuard)
-  @Roles(
-    StaffRole.ADMIN,
-    StaffRole.PRINCIPAL,
-    StaffRole.VICE_PRINCIPAL,
-  )
+
+
+  @UseGuards(AuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.staffService.remove(+id);
+  remove(@Param('id') id: string, @Req() req) {
+    const { staff_id, role } = req.loginInfo;
+    const requestedId = +id;
+
+    if (this.privilagedRoles().includes(role) || requestedId === staff_id) {
+      return this.staffService.remove(requestedId);
+    }
+    throw new UnauthorizedException('You are not authorized to perform this action');
   }
 }

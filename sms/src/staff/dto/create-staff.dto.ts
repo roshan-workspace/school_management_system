@@ -68,7 +68,7 @@ export class CreateStaffDto {
   school_id: number;
 
   @IsString()
-  @MinLength(4)
+  @MinLength(6)
   username: string;
 
   @IsString()

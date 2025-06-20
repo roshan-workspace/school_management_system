@@ -39,7 +39,7 @@ export class StaffService {
         password: hasedPassword,
       });
       const addedStaff = await this.staffRepo.save(newStaff);
-      return {
+      const requiredInfo= {
         StaffID:addedStaff.staff_id,
         Name: addedStaff.full_name,
         Gender: addedStaff.gender,
@@ -50,6 +50,7 @@ export class StaffService {
         Role: addedStaff.role,
         Message: 'New Staff Added Successfully',
       };
+      return { Message: 'New Staff Added Successfully',data:requiredInfo}
     } catch (error) {
       if (error.code == 23505) {
         throw new BadRequestException(

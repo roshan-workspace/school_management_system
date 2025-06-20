@@ -34,11 +34,14 @@ export class StudentController {
     return this.studentService.create(createAdmissionDto);
   }
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(StaffRole.ADMIN, StaffRole.PRINCIPAL, StaffRole.VICE_PRINCIPAL, StaffRole.TEACHER)
   @Get('/admission')
   findAll() {
     return this.studentService.findAll();
   }
 
+  
   @Get('/admission/:id')
   findOne(@Param('id') id: string) {
     return this.studentService.findOne(+id);
@@ -63,7 +66,7 @@ export class StudentController {
 
   // ------------------- Student Attendance ---------------------------
 
-   @UseGuards(AuthGuard, RolesGuard)
+  @UseGuards(AuthGuard, RolesGuard)
   @Roles(
     StaffRole.ADMIN,
     StaffRole.PRINCIPAL,
@@ -80,7 +83,6 @@ export class StudentController {
     );
   }
 
- 
   @Get('/attendance')
   findAllStudentAttendance() {
     return this.studentService.findAllStudentAttendance();
@@ -91,8 +93,7 @@ export class StudentController {
     return this.studentService.findOneAttendanceByAttendanceId(+id);
   }
 
-
-   @UseGuards(AuthGuard, RolesGuard)
+  @UseGuards(AuthGuard, RolesGuard)
   @Roles(
     StaffRole.ADMIN,
     StaffRole.PRINCIPAL,
@@ -111,7 +112,7 @@ export class StudentController {
     );
   }
 
-   @UseGuards(AuthGuard, RolesGuard)
+  @UseGuards(AuthGuard, RolesGuard)
   @Roles(
     StaffRole.ADMIN,
     StaffRole.PRINCIPAL,

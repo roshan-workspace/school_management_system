@@ -19,6 +19,8 @@ import { CreateStudentAttendanceDto } from './dto/create-student_attendance.dto'
 import { StudentAttendance } from './entities/student-attendance.entity';
 import { UpdateStudentAttendanceDto } from './dto/update-student_attendance.dto';
 
+
+import * as bcrypt from 'bcrypt';
 @Injectable()
 export class StudentService {
   constructor(
@@ -53,10 +55,16 @@ export class StudentService {
     }
 
     try {
-      const admission = this.admissionRepo.create(dto);
+      const saltRounds = 10;
+      const hasedPassword = await bcrypt.hash(dto.password,saltRounds);
+
+      const admission = this.admissionRepo.create({
+        ...dto,
+        password:hasedPassword
+      });
       const admissionInfo = await this.admissionRepo.save(admission);
 
-      return {
+      const requiredInfo = {
         AdmissionID: admissionInfo.adm_id,
         Name: admissionInfo.fname,
         Dob: admissionInfo.dob,
@@ -64,14 +72,13 @@ export class StudentService {
         Address: admissionInfo.address,
         GuardianID: admissionInfo.grdn_id,
       };
+      return {message:'New Addmission data inserted successfully', data: requiredInfo}
     } catch (error) {
       throw new InternalServerErrorException('Failed to create admission');
     }
   }
 
   async findAll() {
-    // return await this.admissionRepo.find({ relations: ['guardian'] });
-
     try {
       const admissons = await this.admissionRepo.find({
         relations: { guardian: true },
@@ -88,20 +95,29 @@ export class StudentService {
         };
       });
 
-      return requiredInfo;
+      return { message: 'All data of admission',count:requiredInfo.length, data: requiredInfo };
     } catch (error) {
       throw new InternalServerErrorException('Something went wrong .....');
     }
   }
 
   async findOne(id: number) {
-    const admission = await this.admissionRepo.findOne({
+    const adm= await this.admissionRepo.findOne({
       where: { adm_id: id },
       relations: ['guardian'],
     });
-    if (!admission)
+    if (!adm)
       throw new NotFoundException(`Admission with ID ${id} not found`);
-    return admission;
+    const requiredInfo ={
+          AdmissionID: adm.adm_id,
+          Name: adm.fname,
+          Dob: adm.dob,
+          Gender: adm.gender,
+          Address: adm.address,
+          GuardianID: adm.guardian.grdn_id,
+          Guardian: adm.guardian.full_name,
+        };
+    return {message: `Admission data for ID-${id}`, data: requiredInfo};
   }
 
   async update(id: number, dto: UpdateAdmissionDto) {

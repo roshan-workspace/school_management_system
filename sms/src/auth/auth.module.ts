@@ -7,6 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from './auth.guard';
 import { RolesGuard } from './roles.guard';
+import { Admission } from 'src/student/entities/admission.entity';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { RolesGuard } from './roles.guard';
         },
       }),
     }),
-     TypeOrmModule.forFeature([Staff])
+     TypeOrmModule.forFeature([Staff, Admission])
   ],
   controllers: [AuthController],
   providers: [AuthService,AuthGuard,RolesGuard],
