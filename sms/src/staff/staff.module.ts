@@ -7,7 +7,7 @@ import { School } from 'src/school/entity/school.entity';
 import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports:[AuthModule,TypeOrmModule.forFeature([Staff, School])],
+  imports:[AuthModule,TypeOrmModule.forFeature([School])],
   controllers: [StaffController],
   providers: [StaffService],
 })

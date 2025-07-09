@@ -24,6 +24,6 @@ import { Admission } from 'src/student/entities/admission.entity';
   ],
   controllers: [AuthController],
   providers: [AuthService,AuthGuard,RolesGuard],
-   exports: [AuthService, AuthGuard, JwtModule, RolesGuard],
+   exports: [AuthService, AuthGuard, JwtModule, RolesGuard,TypeOrmModule],
 })
 export class AuthModule {}
